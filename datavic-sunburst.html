@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!--
+@license GPVL
+@author vinsnet@gmail.com
+-->    
+<script src="//d3js.org/d3.v3.min.js"></script>
+<dom-module id="datavic-sunburst">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'datavic-sunburst',
+      properties:{
+        width:{type:Number,value:960},
+        height:{type:Number,value:700},
+        radius:{type:Number,computed:'_computeRadius(width, height)'},
+        
+        _svg:Object,
+        _partition:Object,
+        _arc:Object
+        
+      },
+      _computeRadius:function (width, height) {
+        return Math.min(width, height) / 2;
+      },
+
+      attach:function () {
+      }
+
+
+
+
+ 
+    });
+  </script>
+</dom-module>
