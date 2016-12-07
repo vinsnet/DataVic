@@ -24,10 +24,9 @@
         height:{type:Number,value:480},
         radius:{type:Number,computed:'_computeRadius(width, height)'},
         color:{type:Object,value:function(){return d3.scale.category20c(); }},
-        data:Object,
-        _svg:Object,
-        _partition:Object,
-        _arc:Object
+        data:Object,     
+        _partition:Function,     
+        _arc:Function
         
       },
       observers:[
@@ -36,14 +35,17 @@
       _computeRadius:function (width, height) {
         return Math.min(width, height) / 2;
       },
-      _updateData:function (dataEvent) {
-        var data = dataEvent.base ;
-        if(!data || Object.keys(data).length===0){
-          return ;
-        }
-        var elem = this.svg.datum(data).selectAll("path")
-          .data(this.partition.nodes)
+      _draw:function(data){
+        var svg = d3.select(this.$.diag)
+          .attr("width", this.width/0.9)
+          .attr("height", this.height/0.9)
+        .append("g")
+          .attr("transform", "translate(" + this.width/0.9 / 2 + "," + this.height/0.9 /2 + ")");
+          
+        var elem = svg.datum(data).selectAll("path")
+          .data(this._partition.nodes)
           .enter();
+          
         elem.append("path")
           //.attr("display", function(d) { return d.depth ? null : "none"; }) // hide inner ring
           .attr("d", this._arc)
@@ -71,14 +73,19 @@
           .attr("text-anchor","middle")
           .text(function(d) { return d.name; });
       },
+      _updateData:function (dataEvent) {
+        var data = dataEvent.base ;
+        if(!data || Object.keys(data).length===0){
+          return ;
+        }
+        this._draw(data);
+
+      },
+      
+
+      
       ready:function () {
-        this.svg = d3.select(this.$.diag)
-          .attr("width", this.width/0.9)
-          .attr("height", this.height/0.9)
-        .append("g")
-          .attr("transform", "translate(" + this.width/0.9 / 2 + "," + this.height/0.9 /2 + ")");
-            
-        this.partition = d3.layout.partition()
+        this._partition = d3.layout.partition()
           .sort(function (d,d2) {
             return d.name.localeCompare(d2.name);
           })
@@ -91,9 +98,6 @@
           .innerRadius(function(d) { return Math.sqrt(d.y); })
           .outerRadius(function(d) { return Math.sqrt(d.y + d.dy); });
           
-          
-        
-        
       },
       
       _unity:function(){ return 1; },
@@ -104,7 +108,7 @@
           var b = i(t);
           a.x0 = b.x;
           a.dx0 = b.dx;
-          return arc(b);
+          return this._arc(b);
         };
       },
       
