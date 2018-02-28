@@ -1,4 +1,4 @@
-# DataVic
+# DataVizC
 **Data Viz**ualisation Web**C**omponents
 
 ### TODO
